@@ -1,5 +1,6 @@
 
-# Plexus's Small office/Home office ntopng build - totally FOSS, no license
+# Plexus's Small office/Home office ntopng 
+## totally FOSS, no license
 
 nProbe license not needed. A router that can export Netflow pakcets is needed (OpenWRT, pfSense, Linux on a Nuk, Ubiquity etc)
 
@@ -27,7 +28,6 @@ Well, ntop has been ntopng for quite some time and (unless you want to play abou
 #### Cash Monies
 
 While that tried and tested recipie is great, [nProbe costs (at time of writing) 299.95 EUR](https://shop.ntop.org/) to license. If you try various docker images with ntopng and nProbe, they will work for a few minutes, than bail after a certain number of Netflow packets as theres no license. Which means those playing with this kinda thing at home /SOHO end up getting furstrated thinking they did something wrong and giving up on having an extra layer of security on their home / SOHO LAN
-
 Now, for a SME or big enterprise, 300EUR is nothing - but for a security concious kiddo on a budget, that is a whole bunch of finger fabric (and in many cases, four or five times the cost of the router which is to be monitored). If you are a Small, Meduim or Large enterprse, [go buy the 300 EUR nProbe software from ntop]((https://shop.ntop.org/), it is worth it. It does a whole heap more and its going to make your life easier in the long run. 
 
 But, if you are just wanting to monitor your Home / SOHO LAN, dont need to run gigabit (or above) speeds and can sacrifice some things then read on....Flying by the seat of your FOSS pants is fun!
