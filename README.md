@@ -29,7 +29,7 @@ But, if you are just wanting to monitor your Home / SOHO LAN, dont need to high 
   * Redis
 
 #### Deep Packet Inspection?
-Why yes! This soltuion supports DPI. It compiles [nDPI](https://github.com/ntop/nDPI), the Open and Extensible LGPLv3 Deep Packet Inspection Library, into ntopng at build time. So if something on the network is talking on an uncommon port, you should catch it. 
+Why yes! This solution supports DPI. It compiles [nDPI](https://github.com/ntop/nDPI), the Open and Extensible LGPLv3 Deep Packet Inspection Library, into ntopng at build time. So if something on the network is talking on an uncommon port, you should catch it. 
 
 #### How do you replace costly nProbe?
 
@@ -53,7 +53,7 @@ Disclaimers from [synfinatic](https://github.com/synfinatic) aside, Ive seen thi
 
 I like Aaron even more already. Its free, it seems pretty stable and hey, if you want guarantees then go buy nProbe. 
 
-### Docker Switches 
+## Docker Switches 
 
 #### Network [mandatory]
 You need docker to expose TCP port 3000 (for ntopng) and UDP port 2055 (NetFlow collector).
@@ -84,6 +84,8 @@ If you have multiple exporters and a few nets, then you can use CSV format
 -e LOCALNET="192.168.1.0/24,10.0.0.0/24"
 ```
 
+If you dont set this, it defaults to assume 192.168.1.0/24 is your local network.
+
 #### Persist data dir [optional]
 
 Unless you want to start alerts etc from scratch every time you trash the container, you might want to persist 
@@ -91,6 +93,8 @@ Unless you want to start alerts etc from scratch every time you trash the contai
 ```
 -v /path/to/save/files/on/host:/var/lib/ntopng
 ```
+
+If you dont set this, destroying the docker containter destroys all of your config. 
 
 #### User and Group ID [optional]
 
@@ -100,13 +104,9 @@ The build supports the use of -e PUD and -e PGID format to set the userid and gr
 -e PUID=1001 -e PGID=1001
 ```
 
-#### Saving / dumping expired flows [optional]
-ntopng expires flows after some time. You can put expired flows into nIndex, ElasticSearch, syslog or a MySQL database - and they hang around for a bit longer. You can pass the standard ntopng format mysql string as a switch to the container. [Read up about the options here](https://www.ntop.org/guides/ntopng/advanced_features/flows_dump.html)
 
-If you wanted to use nIndex, you would specify;
-```
--e FLOWDUMP="nindex"
-```
+#### Saving historical flows [optional]
+ntopng expires flows after some time. You can put expired flows into ElasticSearch, Syslog or a MySQL database. the -e FLOWDUMP switch allows you to pass the ntopng executable the '-F' command line switch. [You can read up about the options here](https://www.ntop.org/guides/ntopng/advanced_features/flows_dump.html). note that [nIndex is only available on a licensed, enterprise copy](https://www.ntop.org/guides/ntopng/historical_flows.html)
 
 for MySQL it would be
 
@@ -114,7 +114,7 @@ for MySQL it would be
 -e FLOWDUMP="mysql;<host|socket>;<dbname>;<table name>;<user>;<pw>"
 ```
 
-etc.
+If you dont set this flows disappear as soon as they expire
 
 ## OK! Lets get it
 
@@ -144,7 +144,6 @@ docker run -it \
 -e ACCOUNTID="123456" \
 -e LICENSEKEY="xxxxxxxxxxxxxxx" \
 -e LOCALNET="192.168.1.0/24" \
--e FLOWDUMP="nindex" \
 -v /path/to/save/files/on/host:/var/lib/ntopng \
 --restart unless-stopped \
 theplexus/ntopng-netflow2ng
@@ -162,7 +161,6 @@ docker run -it \
 -e PGID=1000 \
 -e LICENSEKEY="xxxxxxxxxxxxxxx" \
 -e LOCALNET="192.168.1.0/24" \
--e FLOWDUMP="nindex" \
 -v /path/to/save/files/on/host:/var/lib/ntopng \
 --restart unless-stopped \
 ntopng-netflow2ng
@@ -170,7 +168,7 @@ ntopng-netflow2ng
 
 ### Firewall
 
-Make sure the machine running docker allows port 3000 TCP and port 2055 UDP inbound from your router IP. Else this wont end well. Dont forget to restart your firewall to pick up the change. 
+Make sure the machine running docker allows port 3000 TCP and port 2055 UDP inbound from your router IP. Dont forget to restart your firewall to pick up the change. If you can connect your web browser to ntopng but dont see anything arriving, this is probably the first thing to check. 
 
 ## What about softflowd on my router? 
 
