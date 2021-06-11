@@ -94,7 +94,11 @@ Unless you want to start alerts etc from scratch every time you trash the contai
 
 #### User and Group ID [optional]
 
-The build suypports the use of -e PUD and -e PGID format to set the userid and groupid on the host system. ntopng, netflow2ng and redis will appear to run under this UID and GID on the host system
+The build supports the use of -e PUD and -e PGID format to set the userid and groupid on the host system. ntopng, netflow2ng and redis will appear to run under this UID and GID on the host system. So if you set up a user with ID 1001 and Group ID 1001 that ntopng, netflow2nd and redis will run as, you would use this;
+
+```
+-e PUID=1001 -e PGID=1001
+```
 
 #### Saving / dumping expired flows [optional]
 ntopng expires flows after some time. You can put expired flows into nIndex, ElasticSearch, syslog or a MySQL database - and they hang around for a bit longer. You can pass the standard ntopng format mysql string as a switch to the container. [Read up about the options here](https://www.ntop.org/guides/ntopng/advanced_features/flows_dump.html)
