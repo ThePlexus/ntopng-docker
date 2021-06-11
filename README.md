@@ -1,6 +1,6 @@
 
-# Plexus's Small office/Home office ntopng 
-## All FOSS, some trousers
+# The FOSS Small Office/Home office ntopng 
+### All FOSS, some trousers
 
 nProbe license not needed. A router that can export Netflow pakcets is needed (OpenWRT, pfSense, Linux on a Nuk, Ubiquity etc)
 
