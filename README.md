@@ -4,7 +4,7 @@
 ### Small Office/Home office ntopng & DPI monitoring of OpenWRT / pfSense / DD-WRT 
 
 ### Why
-So a friend wanted something to monitor their home network, and I remembered ntop from back in the day before I got into things like [Security Onion](https://securityonionsolutions.com/software/). My friend just wanted to know who was talking to who on their network and didnt really need all the bells and whistles. So they, like many of you loveable lot, came to me for advice. [Security Onion](https://securityonionsolutions.com/software/)," is way to over the top for their use case and threat model. I assume it is for you too, if you are reading this.
+So a friend wanted something to monitor their home network, and I remembered ntop from back in the day before I got into things like [Security Onion](https://securityonionsolutions.com/software/). My friend just wanted to know who was talking to who on their network and didnt really need all the bells and whistles. So they, like many of you loveable lot, came to me for advice. [Security Onion](https://securityonionsolutions.com/software/), is way to over the top for their use case and threat model. I assume it is for you too, if you are reading this.
 
 So i figured - why not use softflowd to export from their OpenWRT router to ntop? Well, ntop has been ntopng for quite some time and (unless you want to play about with ethernet port mirroring) the most common use for it is having NetFlow exporters on router(s), which feed [NetFlow](https://en.wikipedia.org/wiki/NetFlow) v5/v9/v10 packets into a collector (nProbe), which in turn pushes those NetFlows into a message queue (ZMQ) system. ntopng then connects as a MQ client, pulls the flows out of the MQ and presents them in a pretty way in a web interface and lets you do things like alerting etc. 
 
@@ -14,7 +14,7 @@ So i figured - why not use softflowd to export from their OpenWRT router to ntop
 
 ### Cash Monies
 
-While that tried and tested recipie is great, [nProbe costs (at time of writing) 299.95 EUR](https://shop.ntop.org/) to license. If you try various docker images with ntopng and nProbe, they will work for a few minutes, than stop working after a certain number of Netflow packets as there is no license for the component between the router and ntopng. It is likely that that those playing with this kinda thing at home /SOHO end up getting frustrated thinking that they did something wrong. This leads to people giving up on having an extra layer of security on their home / SOHO LAN.
+While that tried and tested recipie is great, [nProbe costs (at time of writing) 299.95 EUR](https://shop.ntop.org/) to license. If you try various docker images with ntopng and nProbe, they will work for a few minutes, than stop working after a certain number of Netflow packets as there is no license for the component between the router and ntopng. It is likely that that those playing with this kinda thing at home/SOHO end up getting frustrated thinking that they did something wrong. This leads to people giving up on having an extra layer of security on their home/SOHO .
 
 Now, for a SME or big enterprise, 300EUR is nothing - but for a security concious kiddo on a budget, that is a whole bunch of finger fabric (and in many cases, four or five times the cost of the router which is to be monitored). If you are a Small, Meduim or Large enterprse, [go buy the 300 EUR nProbe software from ntop](https://shop.ntop.org/), it is worth it. It does a whole heap more and its going to make your life easier in the long run. 
 
@@ -121,14 +121,14 @@ etc.
 ### Build from source
 
 ```
-git clone https://github.com/shamen123/ntopng-netflowng
+git clone https://github.com/shamen123/ntopng-netflow2ng
 cd ntopng-docker
-docker build -t ntopng-netflowng .
+docker build -t ntopng-netflow2ng .
 ```
 ### Or Pull from docker hub...
 
 ```
-docker pull theplexus/ntopng-netflowng
+docker pull theplexus/ntopng-netflow2ng
 ```
 ## Run
 
@@ -144,9 +144,10 @@ docker run -it \
 -e ACCOUNTID="123456" \
 -e LICENSEKEY="xxxxxxxxxxxxxxx" \
 -e LOCALNET="192.168.1.0/24" \
+-e FLOWDUMP="nindex" \
 -v /path/to/save/files/on/host:/var/lib/ntopng \
 --restart unless-stopped \
-theplexus/ntopng-netflowng
+theplexus/ntopng-netflow2ng
 ```
 
 ### After building from source
@@ -161,9 +162,10 @@ docker run -it \
 -e PGID=1000 \
 -e LICENSEKEY="xxxxxxxxxxxxxxx" \
 -e LOCALNET="192.168.1.0/24" \
+-e FLOWDUMP="nindex" \
 -v /path/to/save/files/on/host:/var/lib/ntopng \
 --restart unless-stopped \
-ntopng-netflowng
+ntopng-netflow2ng
 ```
 
 ### Firewall
@@ -172,7 +174,10 @@ Make sure the machine running docker allows port 3000 TCP and port 2055 UDP inbo
 
 ## What about softflowd on my router? 
 
-There are loads of NetFlow exporters out there in the commercial market. But for OpenWRT (and many others) you want to install [softflowd](https://github.com/irino/softflowd). You can do that in Luci (OpenWRT web), or do it in SSH. As there is not a Luci web interface to softflowd, you may as well SSH into your router as you need to do that to configure softflowd anyway. 
+There are loads of NetFlow exporters out there in the commercial market. You would just configure yours to send Netflow v9 template and flows to the IP of your docker host, using UDP on port 2055. Pretty much anything that exports v9 NetFlows should work fine (pfSense, softflowd etc)
+
+#### OpenWRT router Example
+You want to install [softflowd](https://github.com/irino/softflowd). You can do that in Luci (OpenWRT web), or do it in SSH. As there is not a Luci web interface to softflowd, you may as well SSH into your router to isntall it, as you need to do that to configure softflowd anyway. 
 
 ```
 ssh root@your.router.ip
@@ -208,7 +213,7 @@ When you are happy, exit vi ( press : then type wq and press enter ) then you ca
 /etc/init.d/softflowd restart
 ```
 
-NOTE: softflowd will not report any network flows that have used "Hardware flow offload" (aka hardware NAT), which is set in OpenWRT Firewall settings. 
+NOTE: softflowd will not report any network flows that have used "Hardware flow offload" (aka hardware NAT), which is set in OpenWRT Firewall settings (mt762x chipsets only currently). 
 
 ## Done
 
