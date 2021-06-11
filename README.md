@@ -1,22 +1,20 @@
 
-# The FOSS Small Office/Home office ntopng 
-### All FOSS, some trousers
+# The SOHO FOSS ntopng. nProbe license not needed. 
 
-nProbe license not needed. A router that can export Netflow pakcets is needed (OpenWRT, pfSense, Linux on a Nuk, Ubiquity etc)
+### Small Office/Home office ntopng & DPI monitoring of OpenWRT / pfSense / DD-WRT 
 
-### ntopng & DPI monitoring an OpenWRT / pfSense / DD-WRT network in a FOSS way
-
+### Why
 So a friend wanted something to monitor their home network, and I remembered ntop from back in the day before my world got big. My friend just wanted to know who was talking to who on their network and didnt really need all the bells and whistles. So they, like many of you loveable lot, came to me for advice. Now normally id be saying, "hey go check out [Security Onion](https://securityonionsolutions.com/software/)," but that is way to over the top for their use case and threat model. I assume it is for you too, if you are reading this.
 
 So i figured - why not use softflowd to export from their OpenWRT router to ntop? 
 
 Well, ntop has been ntopng for quite some time and (unless you want to play about with ethernet port mirroring) the most common use for it is having NetFlow exporters on routers, which feed NetFlow v5/v9/v10 packets into a collector (nProbe) which in turn pushes those NetFlows into a message queue (ZMQ) system. ntopng then connects as a MQ client, pulls the flows out of the MQ and presents them in a pretty way in a web interface and lets you do things like alerting etc. 
 
-### It looks like this (sorta)
+#### It looks like this (sorta)
 
 > router(exporter) --> Netflow Packet --> nProbe(collector) --> ZMQ <-- ntopng 
 
-#### Cash Monies
+### Cash Monies
 
 While that tried and tested recipie is great, [nProbe costs (at time of writing) 299.95 EUR](https://shop.ntop.org/) to license. If you try various docker images with ntopng and nProbe, they will work for a few minutes, than bail after a certain number of Netflow packets as there is no license. It seems that those playing with this kinda thing at home /SOHO end up getting frustrated thinking that they did something wrong. This leads to people giving up on having an extra layer of security on their home / SOHO LAN.
 
@@ -34,20 +32,12 @@ But, if you are just wanting to monitor your Home / SOHO LAN, dont need to high 
 ..* netflow2ng
 ..* Redis
 
-#### Cash Monies
-
-While that tried and tested recipie is great, [nProbe costs (at time of writing) 299.95 EUR](https://shop.ntop.org/) to license. If you try various docker images with ntopng and nProbe, they will work for a few minutes, than bail after a certain number of Netflow packets as there is no license. It seems that those playing with this kinda thing at home /SOHO end up getting frustrated thinking that they did something wrong. This leads to people giving up on having an extra layer of security on their home / SOHO LAN.
-
-Now, for a SME or big enterprise, 300EUR is nothing - but for a security concious kiddo on a budget, that is a whole bunch of finger fabric (and in many cases, four or five times the cost of the router which is to be monitored). If you are a Small, Meduim or Large enterprse, [go buy the 300 EUR nProbe software from ntop](https://shop.ntop.org/), it is worth it. It does a whole heap more and its going to make your life easier in the long run. 
-
-But, if you are just wanting to monitor your Home / SOHO LAN, dont need to high hundred megabit (or above) speeds and can sacrifice some things then; read on....**_Flying by the seat of your FOSS pants is fun!_**
-
 #### Deep Packet Inspection?
 Why yes! This soltuion supports DPI. It compiles [nDPI](https://github.com/ntop/nDPI), the Open and Extensible LGPLv3 Deep Packet Inspection Library, into ntopng at build time. So if something on the network is talking on an uncommon port, you should catch it. 
 
-#### How do you replace nProbe?
+#### How do you replace costly nProbe?
 
-Ive cobbled together a solution which relies upon [Aaron Turner/synfinatic](https://github.com/synfinatic), who it seems not only writes great utilities with quirkly names (such as the awesomely catchphrased ['udp-proxy'2000' - a crappy UDP router for the year 2020 and beyond](https://github.com/synfinatic/udp-proxy-2020)), but who takes time out of their busy day to replce the nProbe component with a FOSS utlity to do the same thing - introducing [netflow2ng](https://github.com/synfinatic/netflow2ng)
+Ive cobbled together a solution which relies upon [Aaron Turner/synfinatic](https://github.com/synfinatic), who it seems not only writes great utilities with quirkly names (such as the awesomely catchphrased ['udp-proxy'2000' - a crappy UDP router for the year 2020 and beyond](https://github.com/synfinatic/udp-proxy-2020), but who takes time out of their busy day to replce the nProbe component with a FOSS utlity to do the same thing - introducing [netflow2ng](https://github.com/synfinatic/netflow2ng)
 
 #### Netflow2ng Features
 
@@ -203,7 +193,6 @@ http://docker.host.ip.address.goes.here:3000
 You now are monitoring your home network with ntopng fed from your Netflow collector via NetFlow v9 packets into netflow2ng.
 
 **And it didnt cost you anything more than some time.**
-
 
 
 
