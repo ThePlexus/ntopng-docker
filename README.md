@@ -175,7 +175,7 @@ Make sure the machine running docker allows port 3000 TCP and port 2055 UDP inbo
 There are loads of NetFlow exporters out there in the commercial market. You would just configure yours to send Netflow v9 template and flows to the IP of your docker host, using UDP on port 2055. Pretty much anything that exports v9 NetFlows should work fine (pfSense, softflowd etc)
 
 #### OpenWRT router Example
-You want to install [softflowd](https://github.com/irino/softflowd). You can do that in Luci (OpenWRT web), or do it in SSH. As there is not a Luci web interface to softflowd, you may as well SSH into your router to isntall it, as you need to do that to configure softflowd anyway. 
+You want to install [softflowd](https://github.com/irino/softflowd). You can do that in Luci (OpenWRT web), or do it in SSH. As there is not a Luci web interface to softflowd, you may as well SSH into your router to install it, as you need to do that to configure softflowd anyway. 
 
 ```
 ssh root@your.router.ip
